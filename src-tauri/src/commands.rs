@@ -112,8 +112,9 @@ pub fn publish_site_internal(
     site.onion_address = Some(info.address);
     site.private_key = Some(info.private_key);
     site.enabled = true;
+    let view = to_view(site, true);
     sites.persist()?;
-    Ok(to_view(site, true))
+    Ok(view)
 }
 
 /// Handles the (rare) case where a static site's local server is already
@@ -126,8 +127,9 @@ fn republish_static(app: &AppHandle, state: &AppState, id: &str) -> anyhow::Resu
         .get_mut(id)
         .ok_or_else(|| anyhow::anyhow!("Site not found"))?;
     site.enabled = true;
+    let view = to_view(site, true);
     sites.persist()?;
-    Ok(to_view(site, true))
+    Ok(view)
 }
 
 #[tauri::command]
@@ -154,8 +156,9 @@ fn unpublish_site_internal(state: &AppState, id: &str) -> anyhow::Result<SiteVie
         .get_mut(id)
         .ok_or_else(|| anyhow::anyhow!("Site not found"))?;
     site.enabled = false;
+    let view = to_view(site, false);
     sites.persist()?;
-    Ok(to_view(site, false))
+    Ok(view)
 }
 
 #[tauri::command]

@@ -27,6 +27,6 @@ uuid = { version = "1", features = ["v4"] }
 directories = "5"
 anyhow = "1"
 thiserror = "1"
-qrcode = { version = "0.14", default-features = false }
+qrcode = { version = "0.14", default-features = false, features = ["svg"] }
 chrono = { version = "0.4", features = ["serde"] }
 

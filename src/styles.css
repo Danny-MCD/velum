@@ -290,6 +290,10 @@ code {
   gap: 14px;
 }
 
+.empty-state[hidden] {
+  display: none;
+}
+
 .empty-illustration {
   width: 84px;
   height: 84px;
@@ -315,6 +319,10 @@ code {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.site-detail[hidden] {
+  display: none;
 }
 
 .site-detail-header {
