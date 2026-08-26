@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Velum</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">Velum</span>
+      </div>
+
+      <div class="tor-status" id="tor-status">
+        <span class="status-dot" id="status-dot"></span>
+        <div class="status-text">
+          <strong id="status-label">Starting Tor…</strong>
+          <span id="status-sub">This can take a few seconds</span>
+        </div>
+      </div>
+
+      <nav class="site-list" id="site-list" aria-label="Your sites"></nav>
+
+      <button class="btn btn-primary btn-new-site" id="btn-new-site">
+        <span class="icon-plus" aria-hidden="true">+</span> New site
+      </button>
+
+      <div class="sidebar-footer">
+        <a href="#" id="link-help">How this works</a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <!-- Empty state -->
+      <section class="empty-state" id="empty-state">
+        <div class="empty-illustration" aria-hidden="true"></div>
+        <h1>Publish your first onion site</h1>
+        <p>
+          Point Velum at a folder of files, or at something already running
+          on your machine, and it'll hand you a working
+          <code>.onion</code> address in a few seconds. Tor runs locally,
+          your files stay on your computer, and the keys are yours.
+        </p>
+        <button class="btn btn-primary" id="btn-empty-new-site">Create your first site</button>
+      </section>
+
+      <!-- Site detail view -->
+      <section class="site-detail" id="site-detail" hidden>
+        <header class="site-detail-header">
+          <div>
+            <h1 id="detail-name">Site name</h1>
+            <span class="badge" id="detail-badge">Draft</span>
+          </div>
+          <div class="site-detail-actions">
+            <button class="btn btn-danger-ghost" id="btn-delete-site">Delete</button>
+            <button class="btn btn-primary" id="btn-toggle-publish">Publish</button>
+          </div>
+        </header>
+
+        <div class="card address-card" id="address-card" hidden>
+          <div class="address-row">
+            <div class="onion-address" id="onion-address">xxxxxxxx.onion</div>
+            <button class="btn btn-ghost" id="btn-copy-address">Copy</button>
+          </div>
+          <div class="address-meta">
+            <span id="reachability-note">Waiting for Tor to finish connecting…</span>
+          </div>
+          <div class="qr-wrap" id="qr-wrap"></div>
+        </div>
+
+        <div class="card">
+          <h2>Source</h2>
+          <div id="source-summary" class="source-summary"></div>
+        </div>
+
+        <div class="card key-card">
+          <h2>Private key</h2>
+          <p class="muted">
+            This key <strong>is</strong> your onion address. Anyone who has it can
+            take over this exact <code>.onion</code> identity. Back it up somewhere
+            safe and never share it.
+          </p>
+          <div class="key-reveal" id="key-reveal">
+            <button class="btn btn-ghost" id="btn-reveal-key">Reveal key</button>
+            <code class="key-value hidden-key" id="key-value"></code>
+            <button class="btn btn-ghost hidden" id="btn-copy-key">Copy</button>
+          </div>
+        </div>
+
+        <div class="card danger-zone">
+          <h2>Danger zone</h2>
+          <div class="danger-row">
+            <div>
+              <strong>Unpublish</strong>
+              <p class="muted">Takes the site offline. Your address and key are kept, so you can republish later.</p>
+            </div>
+            <button class="btn btn-ghost" id="btn-unpublish">Unpublish</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- New site modal -->
+  <div class="modal-backdrop hidden" id="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h2 id="modal-title">New site</h2>
+
+      <label class="field">
+        <span>Name</span>
+        <input type="text" id="input-name" placeholder="My blog" maxlength="60" />
+      </label>
+
+      <div class="mode-toggle" role="tablist" aria-label="Site source">
+        <button class="mode-btn active" id="mode-static" role="tab" aria-selected="true">Static folder</button>
+        <button class="mode-btn" id="mode-existing" role="tab" aria-selected="false">Existing local site</button>
+      </div>
+
+      <div id="mode-static-panel">
+        <label class="field">
+          <span>Folder to publish</span>
+          <div class="folder-picker">
+            <input type="text" id="input-folder" placeholder="Choose a folder…" readonly />
+            <button class="btn btn-ghost" id="btn-pick-folder">Browse…</button>
+          </div>
+        </label>
+        <p class="hint">Needs an <code>index.html</code> at the top level.</p>
+      </div>
+
+      <div id="mode-existing-panel" hidden>
+        <label class="field">
+          <span>Local port your site is already running on</span>
+          <input type="number" id="input-port" placeholder="3000" min="1" max="65535" />
+        </label>
+        <p class="hint">Velum will point a new onion address at <code>127.0.0.1:&lt;port&gt;</code>.</p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="btn-cancel-modal">Cancel</button>
+        <button class="btn btn-primary" id="btn-create-site">Create site</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help modal -->
+  <div class="modal-backdrop hidden" id="help-backdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h2>How Velum works</h2>
+      <ol class="help-steps">
+        <li>Velum bundles Tor and runs it on your machine - nothing is sent to a server we run.</li>
+        <li>When you publish a site, Velum generates a private key on your computer and asks Tor for a matching <code>.onion</code> address.</li>
+        <li>Static folders are served by a tiny local web server inside Velum; "existing site" mode just points Tor at a port you're already running.</li>
+        <li>Your address and key live in a local file on your machine. Back up the key if you want to reuse the same address elsewhere.</li>
+        <li>Closing Velum stops Tor and takes your sites offline. Reopen it and hit Publish to bring them back.</li>
+      </ol>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="btn-close-help">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Velum",
+  "version": "0.1.0",
+  "identifier": "com.velum.app",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Velum",
+        "width": 1040,
+        "height": 720,
+        "minWidth": 900,
+        "minHeight": 620,
+        "resizable": true,
+        "center": true,
+        "decorations": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "Velum contributors",
+    "category": "DeveloperTool",
+    "shortDescription": "Publish a Tor onion site in a few clicks.",
+    "longDescription": "Velum bundles Tor and gives you a simple desktop app to turn a static folder or an existing local site into a Tor onion service, hosted on your own machine, with the address and keys always in your control.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "externalBin": ["binaries/tor"],
+    "resources": []
+  }
+}

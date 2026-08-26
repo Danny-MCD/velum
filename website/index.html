@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Velum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0b1a;
+    --surface: #17132b;
+    --surface-2: #211a3e;
+    --line: rgba(233, 228, 250, 0.12);
+    --thread: #8a6fd6;
+    --gold: #e9c46a;
+    --gold-strong: #cf9f3f;
+    --text: #f1eef9;
+    --text-muted: #a79fc2;
+    --good: #6bc59a;
+
+    --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+    --font-body: "Karla", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", "Cascadia Code", Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #f6f4fb;
+      --surface: #ffffff;
+      --surface-2: #eee9f9;
+      --line: rgba(30, 20, 60, 0.1);
+      --thread: #6a4fbf;
+      --gold: #b8822a;
+      --gold-strong: #96691e;
+      --text: #1c1730;
+      --text-muted: #5c5476;
+      --good: #2f8f63;
+    }
+  }
+  :root[data-theme="light"] {
+    --ink: #f6f4fb;
+    --surface: #ffffff;
+    --surface-2: #eee9f9;
+    --line: rgba(30, 20, 60, 0.1);
+    --thread: #6a4fbf;
+    --gold: #b8822a;
+    --gold-strong: #96691e;
+    --text: #1c1730;
+    --text-muted: #5c5476;
+    --good: #2f8f63;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  a { color: var(--gold); }
+  code, .mono { font-family: var(--font-mono); }
+
+  h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  .prose { max-width: 64ch; }
+
+  /* ---------- Nav ---------- */
+
+  header.site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    backdrop-filter: blur(10px);
+    background: color-mix(in srgb, var(--ink) 78%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 28px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .brand-mark {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 45%, var(--gold) 0%, var(--thread) 55%, var(--ink) 100%);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--gold) 45%, transparent);
+    flex-shrink: 0;
+  }
+
+  .nav-links { display: flex; align-items: center; gap: 28px; }
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 14.5px;
+    padding: 11px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    text-decoration: none;
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--text);
+    transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--gold) 40%, var(--line)); }
+  .btn-primary {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #201705;
+  }
+  .btn-primary:hover { background: color-mix(in srgb, var(--gold) 88%, white 12%); }
+
+  /* ---------- Hero ---------- */
+
+  .hero {
+    position: relative;
+    padding: 96px 28px 80px;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 48px;
+    align-items: center;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--thread);
+    margin: 0 0 18px;
+  }
+
+  .hero h1 {
+    font-size: clamp(34px, 4.6vw, 54px);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--gold);
+  }
+
+  .hero p.lede {
+    margin: 22px 0 32px;
+    font-size: 17.5px;
+    color: var(--text-muted);
+    max-width: 46ch;
+  }
+
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+  .hero-note {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* Layered veil / onion-ring graphic */
+  .veil-art {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+  }
+  .ring.r1 { width: 100%; height: 100%; animation: spin 90s linear infinite; }
+  .ring.r2 { width: 78%; height: 78%; border-color: color-mix(in srgb, var(--thread) 35%, var(--line)); animation: spin 70s linear infinite reverse; }
+  .ring.r3 { width: 56%; height: 56%; border-color: color-mix(in srgb, var(--thread) 55%, var(--line)); }
+  .ring.core {
+    width: 32%;
+    height: 32%;
+    border: none;
+    background: radial-gradient(circle at 50% 42%, var(--gold) 0%, var(--thread) 60%, transparent 100%);
+    filter: blur(0.3px);
+    animation: glow 5s ease-in-out infinite;
+  }
+  .ring.r1::before, .ring.r2::before {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    top: -3px;
+    left: 50%;
+    box-shadow: 0 0 8px var(--gold);
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 40px 6px color-mix(in srgb, var(--gold) 35%, transparent); }
+    50% { box-shadow: 0 0 62px 14px color-mix(in srgb, var(--gold) 50%, transparent); }
+  }
+
+  /* ---------- Sections ---------- */
+
+  section { padding: 76px 28px; border-top: 1px solid var(--line); }
+  section .kicker {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--thread);
+    margin: 0 0 10px;
+  }
+  section h2 { font-size: clamp(24px, 3vw, 32px); font-weight: 500; margin-bottom: 14px; }
+  section > .wrap > p.prose { color: var(--text-muted); font-size: 16px; }
+
+  /* Steps */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 44px;
+  }
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px 24px;
+  }
+  .step .num {
+    font-family: var(--font-mono);
+    color: var(--gold);
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .step h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+  .step p { color: var(--text-muted); font-size: 14.5px; margin: 0; }
+
+  /* Product mockup */
+  .mockup-frame {
+    margin-top: 48px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    overflow: hidden;
+    box-shadow: 0 40px 90px -30px rgba(0,0,0,0.55);
+  }
+  .mockup-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 14px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .mockup-titlebar span {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--line);
+  }
+  .mockup-body {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    min-height: 340px;
+    font-size: 13px;
+  }
+  .mockup-side {
+    background: color-mix(in srgb, var(--ink) 55%, var(--surface) 45%);
+    border-right: 1px solid var(--line);
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .mockup-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 11.5px;
+  }
+  .mockup-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); box-shadow: 0 0 6px var(--good); }
+  .mockup-site { padding: 7px 9px; border-radius: 6px; font-size: 12px; color: var(--text-muted); }
+  .mockup-site.active { background: var(--surface-2); color: var(--text); }
+  .mockup-main { padding: 22px 26px; }
+  .mockup-main h4 { font-family: var(--font-body); font-size: 15px; margin: 0 0 4px; }
+  .mockup-badge {
+    display: inline-block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--good);
+    border: 1px solid color-mix(in srgb, var(--good) 40%, var(--line));
+    background: color-mix(in srgb, var(--good) 12%, transparent);
+    border-radius: 99px;
+    padding: 2px 8px;
+    margin-bottom: 18px;
+  }
+  .mockup-address {
+    font-family: var(--font-mono);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: var(--gold);
+    font-size: 12.5px;
+    word-break: break-all;
+  }
+  .mockup-caption {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 14px;
+  }
+
+  /* Features */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 40px;
+  }
+  .feature {
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  .feature h3 { font-size: 15.5px; font-weight: 700; font-family: var(--font-body); margin-bottom: 6px; }
+  .feature p { margin: 0; font-size: 14px; color: var(--text-muted); }
+
+  /* Under the hood */
+  .terminal {
+    margin-top: 36px;
+    background: #08070f;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 24px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.75;
+    overflow-x: auto;
+    color: #d8d3ec;
+  }
+  .terminal .c-out { color: var(--gold); }
+  .terminal .c-mut { color: #6f6a86; }
+
+  /* Download */
+  .download-panel {
+    margin-top: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .download-card {
+    flex: 1;
+    min-width: 220px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px;
+    background: var(--surface);
+  }
+  .download-card h3 { font-family: var(--font-body); font-size: 15px; margin-bottom: 6px; }
+  .download-card p { font-size: 13px; color: var(--text-muted); margin: 0 0 16px; }
+
+  /* FAQ */
+  .faq { margin-top: 36px; display: flex; flex-direction: column; gap: 1px; }
+  .faq-item { border-bottom: 1px solid var(--line); padding: 20px 0; }
+  .faq-item h3 { font-family: var(--font-body); font-size: 15.5px; font-weight: 700; margin-bottom: 8px; }
+  .faq-item p { margin: 0; color: var(--text-muted); font-size: 14.5px; max-width: 62ch; }
+
+  footer {
+    padding: 40px 28px 56px;
+    border-top: 1px solid var(--line);
+  }
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .footer-row a { color: var(--text-muted); }
+  .footer-row a:hover { color: var(--text); }
+  .disclaimer {
+    margin-top: 18px;
+    font-size: 12px;
+    color: var(--text-muted);
+    max-width: 70ch;
+  }
+
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .veil-art { max-width: 280px; margin: 0 auto; }
+    .steps, .features { grid-template-columns: 1fr; }
+    .mockup-body { grid-template-columns: 1fr; }
+    .mockup-side { display: none; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-row">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Velum</div>
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#hood">Under the hood</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-primary" href="#download">Download</a>
+  </div>
+</header>
+
+<section class="hero" style="border-top:none;">
+  <div class="hero-grid wrap">
+    <div>
+      <p class="eyebrow">Onion publishing for one</p>
+      <h1>Peel back the layers.<br>Put something on the <em>other side</em>.</h1>
+      <p class="lede">
+        Velum bundles Tor and turns a folder of files - or a site you've already
+        got running - into a working <code>.onion</code> address, in a few
+        clicks, on your own computer. No hosting service. No account.
+        Nothing published anywhere except by you.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#download">Download for Windows</a>
+        <a class="btn" href="https://github.com/velum-app/velum">View source on GitHub</a>
+      </div>
+      <p class="hero-note">Free and open source, MIT licensed. macOS and Linux builds coming next.</p>
+    </div>
+    <div class="veil-art" aria-hidden="true">
+      <div class="ring r1"></div>
+      <div class="ring r2"></div>
+      <div class="ring r3"></div>
+      <div class="ring core"></div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <p class="kicker">How it works</p>
+    <h2>Three steps, all of them on your machine.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="num">01</div>
+        <h3>Point Velum at a folder - or a port</h3>
+        <p>Hand it a folder with an <code>index.html</code>, or the local port something else is already running on.</p>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <h3>It asks Tor for an address</h3>
+        <p>Velum generates a private key locally and Tor hands back a matching <code>.onion</code> address - yours to keep.</p>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <h3>Publish, share, it's live</h3>
+        <p>Copy the address, scan the QR code, or export the key so you can stand up the same identity elsewhere.</p>
+      </div>
+    </div>
+
+    <div class="mockup-frame">
+      <div class="mockup-titlebar"><span></span><span></span><span></span></div>
+      <div class="mockup-body">
+        <div class="mockup-side">
+          <div class="mockup-status"><span class="mockup-dot"></span> Tor is connected</div>
+          <div class="mockup-site active">field-notes</div>
+          <div class="mockup-site">press-kit</div>
+          <div class="mockup-site">dev-preview</div>
+        </div>
+        <div class="mockup-main">
+          <h4>field-notes</h4>
+          <span class="mockup-badge">Live</span>
+          <div class="mockup-address">7g4k2m9zqjv3rslxpqe2ndf8t6chb1yao5uw0vhi4dxrz9plkq2c.onion</div>
+        </div>
+      </div>
+    </div>
+    <p class="mockup-caption">A mockup of the actual interface, built from the same design system as the app.</p>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <p class="kicker">What's inside</p>
+    <h2>Enough to be useful, not enough to get complicated.</h2>
+    <div class="features">
+      <div class="feature">
+        <h3>Static folder hosting</h3>
+        <p>A small local server, built in, serves your files - no separate web server to configure.</p>
+      </div>
+      <div class="feature">
+        <h3>Point at what you've got</h3>
+        <p>Already running a dev server or an app locally? Give Velum the port and it publishes that instead.</p>
+      </div>
+      <div class="feature">
+        <h3>Your address, your key</h3>
+        <p>The private key behind your <code>.onion</code> address stays on your machine. Export it, back it up, move it - it's yours.</p>
+      </div>
+      <div class="feature">
+        <h3>QR code &amp; one-click copy</h3>
+        <p>Hand your address to someone across the room or across the world without retyping 56 characters.</p>
+      </div>
+      <div class="feature">
+        <h3>Sites remember themselves</h3>
+        <p>Close Velum, reopen it later, and whatever you had published comes back online automatically.</p>
+      </div>
+      <div class="feature">
+        <h3>No account, no fees</h3>
+        <p>There's no service behind this to sign up for. It's Tor and a folder, wrapped in a friendlier front door.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="hood">
+  <div class="wrap">
+    <p class="kicker">Under the hood</p>
+    <h2>For anyone who wants to see the wiring.</h2>
+    <p class="prose">
+      Velum talks to Tor over its own control protocol - the same interface
+      Tor Browser and other tools use. Publishing a site is one exchange:
+    </p>
+    <div class="terminal">
+<div><span class="c-mut">&gt;</span> ADD_ONION NEW:ED25519-V3 Port=80,127.0.0.1:51342</div>
+<div class="c-out">250-ServiceID=7g4k2m9zqjv3rslxpqe2ndf8t6chb1yao5uw0vhi4dxrz9plkq2c</div>
+<div class="c-out">250-PrivateKey=ED25519-V3:mAZ...redacted...F2A=</div>
+<div class="c-out">250 OK</div>
+    </div>
+    <p class="prose" style="margin-top:22px;">
+      That's the whole trick: Tor generates the address from the key, and
+      whoever holds the key can reproduce the address anywhere. Velum just
+      keeps the process, the key, and the local server it points at, tidy.
+      Source lives in
+      <code>src-tauri/src/tor.rs</code> if you want the exact wire format.
+    </p>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap">
+    <p class="kicker">Get it</p>
+    <h2>Download Velum</h2>
+    <p class="prose">Pick your platform. Every build is signed from the same open-source repository - build it yourself if you'd rather not trust a binary.</p>
+    <div class="download-panel">
+      <div class="download-card">
+        <h3>Windows</h3>
+        <p>Windows 10 or later.</p>
+        <a class="btn btn-primary" href="https://github.com/velum-app/velum/releases/latest">Download .msi</a>
+      </div>
+      <div class="download-card">
+        <h3>macOS</h3>
+        <p>Coming soon - build from source in the meantime.</p>
+        <a class="btn" href="https://github.com/velum-app/velum#building-it-yourself">Build instructions</a>
+      </div>
+      <div class="download-card">
+        <h3>Linux</h3>
+        <p>Coming soon - build from source in the meantime.</p>
+        <a class="btn" href="https://github.com/velum-app/velum#building-it-yourself">Build instructions</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <p class="kicker">Before you ask</p>
+    <h2>Frequently asked</h2>
+    <div class="faq">
+      <div class="faq-item">
+        <h3>Do you host anything, or see what I publish?</h3>
+        <p>No. Velum runs entirely on your computer. There's no server operated by this project in the path between your files and the Tor network.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What happens when I close the app?</h3>
+        <p>Tor stops, and every site you had published goes offline until you reopen Velum. Nothing keeps running in the background.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Who's responsible for what gets published?</h3>
+        <p>You are - the same as anyone running any web server. Velum doesn't moderate, scan, or vouch for content it publishes.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Can I move a site to another computer?</h3>
+        <p>Yes. Export the private key from the site's page and reuse it wherever you run Velum (or plain Tor) next - the address stays identical.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-row">
+      <span>&copy; 2026 Velum contributors &mdash; MIT licensed</span>
+      <span><a href="https://github.com/velum-app/velum">GitHub</a> &middot; <a href="https://github.com/velum-app/velum/issues">Report an issue</a></span>
+    </div>
+    <p class="disclaimer">
+      Velum is an independent open-source project and is not affiliated with,
+      endorsed by, or sponsored by The Tor Project. "Tor" and the Tor onion
+      logo are trademarks of The Tor Project, Inc.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capabilities granted to the main Velum window",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-close",
+    "core:window:allow-minimize",
+    "dialog:default",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [{ "name": "binaries/tor", "sidecar": true, "args": true }]
+    }
+  ]
+}
