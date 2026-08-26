@@ -6,6 +6,13 @@ use crate::state::AppState;
 use crate::store::{Site, SiteMode, SiteView};
 use crate::tor::TorStatus;
 
+/// A minimal, self-contained placeholder site (no external requests, as
+/// befits something served over Tor) so a first-time user can go through
+/// the whole publish flow before they have real content of their own.
+/// `{{SITE_NAME}}` is the only substitution point, used for both `<title>`
+/// and the on-page headline.
+const STARTER_SITE_TEMPLATE: &str = include_str!("../assets/starter-site.html");
+
 fn to_view(site: &Site, running: bool) -> SiteView {
     SiteView {
         id: site.id.clone(),
@@ -32,6 +39,60 @@ pub fn list_sites(state: State<AppState>) -> Vec<SiteView> {
         .iter()
         .map(|s| to_view(s, s.enabled && (running.contains_key(&s.id) || matches!(s.mode, SiteMode::Existing { .. }))))
         .collect()
+}
+
+/// Escapes the handful of characters that matter in HTML text content.
+/// The starter template only ever places `{{SITE_NAME}}` inside text nodes
+/// (a `<title>` and an `<h1>`), never inside an attribute, so this is enough.
+fn escape_html(input: &str) -> String {
+    input
+        .replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+        .replace('\'', "&#39;")
+}
+
+/// Turns a site name into a filesystem-safe folder name fragment.
+fn slugify(name: &str) -> String {
+    let mut slug = String::new();
+    let mut last_was_dash = false;
+    for ch in name.to_lowercase().chars() {
+        if ch.is_ascii_alphanumeric() {
+            slug.push(ch);
+            last_was_dash = false;
+        } else if !last_was_dash && !slug.is_empty() {
+            slug.push('-');
+            last_was_dash = true;
+        }
+    }
+    while slug.ends_with('-') {
+        slug.pop();
+    }
+    if slug.is_empty() {
+        "site".to_string()
+    } else {
+        slug
+    }
+}
+
+/// Generates a fresh folder containing a self-contained placeholder page
+/// headlined with `name`, and returns its absolute path - ready to hand
+/// straight to `create_site` as a static folder, exactly like a folder the
+/// user picked themselves.
+#[tauri::command]
+pub fn generate_starter_site(app: AppHandle, name: String) -> Result<String, String> {
+    let data_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+    let folder_name = format!("{}-{}", slugify(&name), &uuid::Uuid::new_v4().to_string()[..8]);
+    let site_dir = data_dir.join("starter-sites").join(folder_name);
+    std::fs::create_dir_all(&site_dir).map_err(|e| e.to_string())?;
+
+    let escaped_name = escape_html(name.trim());
+    let display_name = if escaped_name.is_empty() { "My onion site".to_string() } else { escaped_name };
+    let html = STARTER_SITE_TEMPLATE.replace("{{SITE_NAME}}", &display_name);
+    std::fs::write(site_dir.join("index.html"), html).map_err(|e| e.to_string())?;
+
+    Ok(site_dir.to_string_lossy().to_string())
 }
 
 #[tauri::command]

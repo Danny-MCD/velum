@@ -279,6 +279,22 @@ function wireEvents() {
     if (folder) el("input-folder").value = folder;
   });
 
+  el("btn-use-starter").addEventListener("click", async () => {
+    const name = el("input-name").value.trim();
+    if (!name) {
+      showToast("Give it a name first", true);
+      el("input-name").focus();
+      return;
+    }
+    try {
+      const folder = await invoke("generate_starter_site", { name });
+      el("input-folder").value = folder;
+      showToast("Starter page ready - hit Create site");
+    } catch (e) {
+      showToast(`Couldn't create starter page: ${e}`, true);
+    }
+  });
+
   el("btn-create-site").addEventListener("click", submitNewSite);
 
   el("btn-copy-address").addEventListener("click", async () => {

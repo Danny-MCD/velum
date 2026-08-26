@@ -46,6 +46,7 @@ pub fn run() {
             commands::tor_status,
             commands::list_sites,
             commands::pick_folder,
+            commands::generate_starter_site,
             commands::create_site,
             commands::publish_site,
             commands::unpublish_site,
